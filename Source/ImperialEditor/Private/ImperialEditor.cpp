@@ -1,5 +1,5 @@
 // Copyright 2016, Flying Wild Hog sp. z o.o.
-#include "K1Editor.h"
+#include "ImperialEditor.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Editor.h"
