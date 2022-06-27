@@ -5,7 +5,7 @@ public class ImperialEditor : ModuleRules
 	public ImperialEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		PrivatePCHHeaderFile = "Public/K1Editor.h";
+		PrivatePCHHeaderFile = "Public/ImperialEditor.h";
 		bEnforceIWYU = true;
 
 		PublicDependencyModuleNames.AddRange(new string[] {
@@ -42,7 +42,7 @@ public class ImperialEditor : ModuleRules
 			"DeveloperSettings",
 			"PhysicsCore",
 			"EditorWidgets",
-			"WorkspaceMenuStructure"
+			"WorkspaceMenuStructure", "Imperial"
 		});
 	}
 }

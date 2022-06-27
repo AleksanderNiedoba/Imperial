@@ -8,7 +8,7 @@ public class Imperial : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "OverworldBase", "ImperialEditor" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "OverworldBase"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
