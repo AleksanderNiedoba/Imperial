@@ -29,28 +29,18 @@ UGridSystem* UGridSystem::CreateNew()
 
 bool UGridSystem::CreateGrid()
 {
-	const float TileSize = GridConfig->TileSize;
-	
+		
 	for (int RowIndex = 0; RowIndex < GridConfig->NumberOfRows; RowIndex++)
 	{
 		
 		FGridRowData NewRowData;
 		NewRowData.RowId = RowIndex;
-
-		const bool IsEven = GridConfig->CrossGrid && RowIndex % 2 == 0;		
+		
 		for (int ColumnIndex = 0; ColumnIndex < GridConfig->NumberOfColumns; ColumnIndex++)
 		{
 			auto* GridData = NewObject<UGridTileData>();
 			GridData->GridId = FVector2D(RowIndex, ColumnIndex);
-
-			
-			const float HalfTileSize = TileSize / 2.f; 
-			const float CrossGridShift = IsEven ? HalfTileSize : 0.f;
-			
-			const float CenterPointY = ColumnIndex * TileSize + CrossGridShift;
-			const float CenterPointX = RowIndex * TileSize + HalfTileSize;
-			
-			GridData->GridCenterPoint = FVector(CenterPointX, CenterPointY, 0.f);
+			GridData->GridCenterPoint = CalculateTileCenterPoint(RowIndex, ColumnIndex);
 
 			NewRowData.RowGridData.Add(GridData); 
 		}
@@ -58,6 +48,26 @@ bool UGridSystem::CreateGrid()
 	}
 
 	return true; 
+}
+
+FVector UGridSystem::CalculateTileCenterPoint(int32 RowId, int32 ColumnId) const 
+{
+	const float TileSize = GridConfig->TileSize; 
+	const float HalfTileSize = GridConfig->GetHalfTileSize(); 
+	const float CenterPointX = RowId * TileSize + HalfTileSize;
+	float CenterPointY;
+	
+	if(!GridConfig->CrossGrid)
+	{
+		CenterPointY = ColumnId * TileSize + HalfTileSize;
+	}
+	else
+	{
+		const float CrossGridShift = RowId % 2 == 0 ? HalfTileSize : 0.f;
+		CenterPointY = ColumnId * TileSize + CrossGridShift;
+	}
+
+	return FVector(CenterPointX, CenterPointY, 0.f); 
 }
 
 UGridTileData* UGridSystem::GetGridDataById(int32 RowId, int32 ColumnId)

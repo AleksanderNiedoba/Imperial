@@ -35,6 +35,7 @@ public:
 	static UGridSystem* CreateNew();
 
 	bool CreateGrid();
+	FVector CalculateTileCenterPoint(int32 RowId, int32 ColumnId) const; 
 	void ProcessGridHitData(FHitResult HitLocation);
 	
 	UFUNCTION(BlueprintPure)
