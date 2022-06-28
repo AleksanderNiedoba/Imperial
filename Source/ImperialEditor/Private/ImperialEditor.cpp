@@ -1,62 +1,59 @@
-// Copyright 2016, Flying Wild Hog sp. z o.o.
 #include "ImperialEditor.h"
-#include "IImageWrapper.h"
-#include "IImageWrapperModule.h"
-#include "Editor.h"
-#include "Kismet2/BlueprintEditorUtils.h"
 #include "Modules/ModuleManager.h"
-#include "Editor/UnrealEdEngine.h"
-#include "Animation\AnimSequence.h"
-#include "IAssetTools.h"
+#include "LevelEditor.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "TabTools/GridMapCreator.h"
 
+IMPLEMENT_GAME_MODULE(FImperialEditorModule, ImperialEditor);
 
+TSharedRef<FWorkspaceItem> FImperialEditorModule::MenuRoot = FWorkspaceItem::NewGroup(FText::FromString("Menu Root"));
+
+void FImperialEditorModule::AddModuleListeners()
+{
+	ModuleListeners.Add(MakeShareable(new GridMapCreator)); 
+}
+
+void FImperialEditorModule::StartupModule()
+{
+	if (!IsRunningCommandlet())
+	{
+		FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+		LevelEditorMenuExtensibilityManager = LevelEditorModule.GetMenuExtensibilityManager(); 
+		MenuExtender = MakeShareable(new FExtender);
+		MenuExtender->AddMenuBarExtension("Window", EExtensionHook::After, nullptr, FMenuBarExtensionDelegate::CreateRaw(this, &FImperialEditorModule::MakeListMenu));
+		LevelEditorMenuExtensibilityManager->AddExtender(MenuExtender); 
+	}
 	
-class FImperialEditorModuleImpl : public IImperialEditorModule
-{
-	typedef FDefaultGameModuleImpl Super;
-
-public:
-	/**
-	* Called right after the module DLL has been loaded and the module object has been created
-	*/
-	virtual void StartupModule() override;
-
-	/**
-	* Called before the module is unloaded, right before the module object is destroyed.
-	*/
-	virtual void ShutdownModule() override;
-	virtual uint32 GetGameDataAssetCategory() const override;
-	virtual bool IsGameModule() const override;
-
-private:
-	
-	EAssetTypeCategories::Type GameDataAssetCategoryBit;
-	// All registered asset type actions. Cached here so that we can unregister them during shutdown.
-	TArray<TSharedPtr<IAssetTypeActions>> RegisteredAssetTypeActions;
-};
-
-IMPLEMENT_GAME_MODULE(FImperialEditorModuleImpl, ImperialEditor);
-#define LOCTEXT_NAMESPACE "ImperialEditor"
-
-
-void FImperialEditorModuleImpl::StartupModule()
-{
-	IImperialEditorModule::StartupModule();
-	UE_LOG(LogTemp, Warning, TEXT("It Works!!!"));
+	IImperialModuleInterface::StartupModule();
 }
 
-void FImperialEditorModuleImpl::ShutdownModule()
+void FImperialEditorModule::ShutdownModule()
 {
-	IImperialEditorModule::ShutdownModule();
+	IImperialModuleInterface::ShutdownModule();
 }
 
-uint32 FImperialEditorModuleImpl::GetGameDataAssetCategory() const
+
+
+void FImperialEditorModule::AddMenuExtension(const FMenuExtensionDelegate& ExtensionDelegate, FName ExtensionHook, const TSharedPtr<FUICommandList>& CommandList, EExtensionHook::Position Position)
 {
-	return GameDataAssetCategoryBit;
+	MenuExtender->AddMenuExtension(ExtensionHook, Position, CommandList, ExtensionDelegate);
 }
 
-bool FImperialEditorModuleImpl::IsGameModule() const
+void FImperialEditorModule::MakeListMenu(FMenuBarBuilder& MenuBuilder)
 {
-	return true;
+	MenuBuilder.AddPullDownMenu(
+		FText::FromString("Imperial"),
+		FText::FromString("Open custom imperial tools tab"),
+		FNewMenuDelegate::CreateRaw(this, &FImperialEditorModule::FillListMenu),
+		"Imperial",
+		FName(TEXT("Imperial Tools")));
 }
+
+void FImperialEditorModule::FillListMenu(FMenuBuilder& MenuBuilder)
+{
+	MenuBuilder.BeginSection("ImperialSection", FText::FromString("Grid Tools"));
+	MenuBuilder.AddMenuSeparator(FName("Grid_Tools"));
+	MenuBuilder.EndSection();
+}
+
 

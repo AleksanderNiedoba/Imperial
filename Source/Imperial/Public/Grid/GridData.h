@@ -16,5 +16,7 @@ enum class ETileTerrainType : uint8
 	Forest,
 	Marshes,
 	Open,
-	River
+	River,
+	Count UMETA(Hidden)
 };
+ENUM_RANGE_BY_COUNT(ETileTerrainType, ETileTerrainType::Count)

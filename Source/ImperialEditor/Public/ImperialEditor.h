@@ -1,38 +1,45 @@
 #pragma once
 
-#include "Modules/ModuleInterface.h"
+#include "AssetTypeCategories.h"
+#include "IAssetTypeActions.h"
+#include "IImperialModuleInterface.h"
+#include "Framework/Docking/WorkspaceItem.h"
+#include "Framework/MultiBox/MultiBoxExtender.h"
 #include "Modules/ModuleManager.h"
+#include "Toolkits/AssetEditorToolkit.h"
 
-/**
- * The public interface to this module
- */
-class IImperialEditorModule : public IModuleInterface
+
+class FImperialEditorModule : public IImperialModuleInterface
 {
+	typedef FDefaultGameModuleImpl Super;
 
 public:
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+	
+	virtual void AddModuleListeners() override;
 
-	/**
-	 * Singleton-like access to this module's interface.  This is just for convenience!
-	 * Beware of calling this during the shutdown phase, though.  Your module might have been unloaded already.
-	 *
-	 * @return Returns singleton instance, loading the module on demand if needed
-	 */
-	static inline IImperialEditorModule& Get()
+	static inline FImperialEditorModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked< IImperialEditorModule >("ImperialEditor");
+		return FModuleManager::LoadModuleChecked< FImperialEditorModule >("ImperialEditor");
 	}
-
-	/**
-	 * Checks to see if this module is loaded and ready.  It is only valid to call Get() if IsAvailable() returns true.
-	 *
-	 * @return True if the module is loaded and ready to use
-	 */
+	
 	static inline bool IsAvailable()
 	{
 		return FModuleManager::Get().IsModuleLoaded("ImperialEditor");
 	}
+	
+	void AddMenuExtension(const FMenuExtensionDelegate &ExtensionDelegate, FName ExtensionHook, const TSharedPtr<FUICommandList> &CommandList = nullptr, EExtensionHook::Position Position = EExtensionHook::Before);
+	TSharedRef<FWorkspaceItem> GetMenuRoot() { return MenuRoot; };
 
-	virtual uint32 GetGameDataAssetCategory() const = 0;
+protected:
+	TSharedPtr<FExtensibilityManager> LevelEditorMenuExtensibilityManager;
+	TSharedPtr<FExtender> MenuExtender;
+
+	static TSharedRef<FWorkspaceItem> MenuRoot;
+
+	void MakeListMenu(FMenuBarBuilder &MenuBuilder);
+	void FillListMenu(FMenuBuilder &MenuBuilder);
 
 };
 

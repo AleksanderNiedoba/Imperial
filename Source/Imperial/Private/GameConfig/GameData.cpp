@@ -24,5 +24,30 @@ UGameData* UGameData::GetGameData()
 			return GameSystem->GetGameDataSystem();
 		}
 	}
-	return nullptr; 
+
+#if WITH_EDITOR
+	FSoftObjectPath GameInstanceBlueprintPath = "Blueprint'/Game/Core/BP_ImperialGameInstance.BP_ImperialGameInstance'";
+	UObject* GameInstanceBlueprint = GameInstanceBlueprintPath.TryLoad();
+	if (!GameInstanceBlueprint)
+	{
+		return nullptr;
+	}
+	GameInstanceBlueprint->AddToRoot();
+	if (UBlueprint* Blueprint = Cast<UBlueprint>(GameInstanceBlueprint))
+	{
+		if (Blueprint->ParentClass->IsChildOf(UGameInstance::StaticClass()))
+		{
+			if (UGameInstance* CDO = Cast<UGameInstance>(Blueprint->GeneratedClass->ClassDefaultObject))
+			{
+				FObjectProperty* GameDataProperty = CastField<FObjectProperty>(CDO->GetClass()->FindPropertyByName("GameData"));
+				if (UGameData* GameData = Cast<UGameData>(GameDataProperty->GetObjectPropertyValue_InContainer(CDO)))
+				{
+					GameData->LoadGameData(); 
+					return GameData;
+				}
+			}
+		}
+	}
+#endif
+	return nullptr; 	
 }

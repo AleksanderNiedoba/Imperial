@@ -32,6 +32,11 @@ public:
 	bool CrossGrid = true; 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid")
 	TEnumAsByte<ECollisionChannel> GridCollisionChannel;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid\|Minimap")
+	FLinearColor WaterColor;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid\|Minimap")
+	FLinearColor OpenTerrainColor;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid\|Debug")
 	FLinearColor GridColor;
