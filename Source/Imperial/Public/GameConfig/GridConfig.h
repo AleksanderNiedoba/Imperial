@@ -37,6 +37,8 @@ public:
 	FLinearColor WaterColor;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid\|Minimap")
 	FLinearColor OpenTerrainColor;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid\|Minimap")
+	TSoftObjectPtr<UTexture2D> TerrainTexture;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid\|Debug")
 	FLinearColor GridColor;

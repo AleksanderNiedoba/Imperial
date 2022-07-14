@@ -2,7 +2,13 @@
 
 
 #include "Grid/TileDefinitions.h"
+#include "GameConfig/GameData.h"
 
+
+UTileDefinitions* UTileDefinitions::GetTileDefinitions()
+{
+	return UGameData::GetGameData()->GetTileDefinitions(); 
+}
 
 bool UTileDefinitions::GetTileDefinitionForType(ETileTerrainType TerrainType, FTileDefinitionData& TileDefinition)
 {
@@ -14,6 +20,8 @@ bool UTileDefinitions::GetTileDefinitionForType(ETileTerrainType TerrainType, FT
 	TileDefinition = *GridDefinitions.Find(TerrainType);
 	return true; 
 }
+
+
 
 #if WITH_EDITOR
 

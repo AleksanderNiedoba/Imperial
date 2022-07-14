@@ -1,6 +1,10 @@
 #include "ImperialEditor.h"
+
+#include "AssetToolsModule.h"
+#include "IAssetTools.h"
 #include "Modules/ModuleManager.h"
 #include "LevelEditor.h"
+#include "CustomDataTypes/GridProfileActions.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "TabTools/GridMapCreator.h"
 
@@ -23,12 +27,30 @@ void FImperialEditorModule::StartupModule()
 		MenuExtender->AddMenuBarExtension("Window", EExtensionHook::After, nullptr, FMenuBarExtensionDelegate::CreateRaw(this, &FImperialEditorModule::MakeListMenu));
 		LevelEditorMenuExtensibilityManager->AddExtender(MenuExtender); 
 	}
+
+	// Custom imperial types 
+	{		
+		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
+		EAssetTypeCategories::Type ImperialAssetsCategory = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Imperial")), FText::FromString("Imperial"));
+		TSharedPtr<IAssetTypeActions> Action = MakeShareable(new FGridProfileAssetActions(ImperialAssetsCategory));
+		AssetTools.RegisterAssetTypeActions(Action.ToSharedRef());
+		CreatedAssetTypeActions.Add(Action);
+	}
 	
 	IImperialModuleInterface::StartupModule();
 }
 
 void FImperialEditorModule::ShutdownModule()
 {
+	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
+	{
+		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
+		for (int32 i = 0; i < CreatedAssetTypeActions.Num(); ++i)
+		{
+			AssetTools.UnregisterAssetTypeActions(CreatedAssetTypeActions[i].ToSharedRef());
+		}
+	}
+	CreatedAssetTypeActions.Empty(); 
 	IImperialModuleInterface::ShutdownModule();
 }
 

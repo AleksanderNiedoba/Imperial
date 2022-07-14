@@ -6,7 +6,8 @@
 void UGameData::LoadGameData()
 {
 	CachedGridConfig = GridConfig.LoadSynchronous();
-	CachedCameraConfig = CameraConfig.LoadSynchronous(); 
+	CachedCameraConfig = CameraConfig.LoadSynchronous();
+	CachedTileDefinitions = TileDefinitions.LoadSynchronous(); 
 }
 
 UGameData* UGameData::GetGameData()

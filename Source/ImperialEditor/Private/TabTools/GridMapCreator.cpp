@@ -1,10 +1,12 @@
 #include "TabTools/GridMapCreator.h"
-#include "TabTools/GridMapCreatorPanel.h"
+
+#include "GameConfig/GridConfig.h"
+#include "TabTools/GridMapCreatorComponents/GridMapCreatorPanel.h"
 
 void GridMapCreator::OnStartupModule()
 {
 	FTabToolBase::OnStartupModule();
-    FImperialEditorModule::Get().AddMenuExtension(FMenuExtensionDelegate::CreateRaw(this, &GridMapCreator::MakeMenuEntry), FName("Grid_Tools")); 
+    FImperialEditorModule::Get().AddMenuExtension(FMenuExtensionDelegate::CreateRaw(this, &GridMapCreator::MakeMenuEntry), FName("Grid_Tools"));
 }
 
 void GridMapCreator::OnShutdownModule()

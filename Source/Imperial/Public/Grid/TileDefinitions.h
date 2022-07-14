@@ -7,30 +7,17 @@
 #include "GridData.h"
 #include "TileDefinitions.generated.h"
 
-USTRUCT(BlueprintType)
-struct FTileDefinitionData
-{
-	GENERATED_BODY()
-
-	FTileDefinitionData() = default; 
-	
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FColor TileMinimapColor;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	TSoftObjectPtr<UTexture> TileIcon;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FText TileName;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FText TileDescription; 
-};
-
 UCLASS()
 class IMPERIAL_API UTileDefinitions : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION(BlueprintPure)
+	static UTileDefinitions* GetTileDefinitions(); 
 	
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "TileDefinition")
 	TMap<ETileTerrainType, FTileDefinitionData> GridDefinitions;
 

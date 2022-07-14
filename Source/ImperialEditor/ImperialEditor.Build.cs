@@ -42,7 +42,8 @@ public class ImperialEditor : ModuleRules
 			"DeveloperSettings",
 			"PhysicsCore",
 			"EditorWidgets",
-			"WorkspaceMenuStructure", "Imperial"
+			"WorkspaceMenuStructure",
+			"Imperial"
 		});
 	}
 }

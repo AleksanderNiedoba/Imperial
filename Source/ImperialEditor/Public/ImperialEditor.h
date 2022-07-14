@@ -32,7 +32,9 @@ public:
 	void AddMenuExtension(const FMenuExtensionDelegate &ExtensionDelegate, FName ExtensionHook, const TSharedPtr<FUICommandList> &CommandList = nullptr, EExtensionHook::Position Position = EExtensionHook::Before);
 	TSharedRef<FWorkspaceItem> GetMenuRoot() { return MenuRoot; };
 
-protected:
+protected:	
+	TArray<TSharedPtr<IAssetTypeActions>> CreatedAssetTypeActions;
+	
 	TSharedPtr<FExtensibilityManager> LevelEditorMenuExtensibilityManager;
 	TSharedPtr<FExtender> MenuExtender;
 
