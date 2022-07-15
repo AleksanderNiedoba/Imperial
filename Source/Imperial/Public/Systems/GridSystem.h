@@ -21,6 +21,13 @@ struct FGridRowData
 	bool IsEmpty() const { return RowGridData.Num() == 0; }
 };
 
+UENUM()
+enum class EVNeighbourRelation
+{
+	Top = 0,
+	Bottom = 1
+};
+
 
 UCLASS()
 class IMPERIAL_API UGridSystem : public UObject
@@ -37,6 +44,11 @@ public:
 	bool CreateGrid();
 	FVector CalculateTileCenterPoint(int32 RowId, int32 ColumnId) const; 
 	void ProcessGridHitData(FHitResult HitLocation);
+
+	UFUNCTION(BlueprintPure)
+	TArray<UGridTileData*> GetNeighbours(const UGridTileData* GridTileData); 
+	TArray<FIntPoint> GetNeighbourIds(FIntPoint GridId);
+	TArray<FIntPoint> GetVNeighbourIds(FIntPoint GridId, EVNeighbourRelation Relation); 
 	
 	UFUNCTION(BlueprintPure)
 	bool IsLocationValid(FVector Location)const ; 

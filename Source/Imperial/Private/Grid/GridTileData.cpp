@@ -10,6 +10,11 @@ bool UGridTileData::IsSame(const UGridTileData* GridTileData) const
 
 bool UGridTileData::IsSame(const int32 RowId, const int32 ColumnId) const
 {
-	const FVector2D InGridId = FVector2D(RowId, ColumnId);
+	const FIntPoint InGridId = FIntPoint(RowId, ColumnId);
+	return GridId == InGridId; 
+}
+
+bool UGridTileData::IsSame(const FIntPoint InGridId) const
+{
 	return GridId == InGridId; 
 }

@@ -14,7 +14,7 @@ class IMPERIAL_API UGridTileData : public UObject
 
 public:
 	UPROPERTY(BlueprintReadOnly)
-	FVector2D GridId; 
+	FIntPoint GridId; 
 	UPROPERTY(BlueprintReadOnly)
 	FVector GridCenterPoint;
 	UPROPERTY(BlueprintReadOnly)
@@ -22,5 +22,6 @@ public:
 
 	UFUNCTION()
 	bool IsSame(const UGridTileData* GridTileData) const;
-	bool IsSame(const int32 RowId, const int32 ColumnId) const; 
+	bool IsSame(const int32 RowId, const int32 ColumnId) const;
+	bool IsSame(const FIntPoint InGridId) const; 
 };

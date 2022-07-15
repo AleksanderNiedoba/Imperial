@@ -39,7 +39,7 @@ bool UGridSystem::CreateGrid()
 		for (int ColumnIndex = 0; ColumnIndex < GridConfig->NumberOfColumns; ColumnIndex++)
 		{
 			auto* GridData = NewObject<UGridTileData>();
-			GridData->GridId = FVector2D(RowIndex, ColumnIndex);
+			GridData->GridId = FIntPoint(RowIndex, ColumnIndex);
 			GridData->GridCenterPoint = CalculateTileCenterPoint(RowIndex, ColumnIndex);
 
 			NewRowData.RowGridData.Add(GridData); 
@@ -103,6 +103,77 @@ void UGridSystem::ProcessGridHitData(FHitResult HitResult)
 	HitGridData = nullptr;
 	OnNewGridTileHit.Broadcast(nullptr); 
 	
+}
+
+TArray<UGridTileData*> UGridSystem::GetNeighbours(const UGridTileData* GridTileData)
+{
+	TArray<UGridTileData*> Result; 
+	for(const auto TileId : GetNeighbourIds(GridTileData->GridId))
+	{
+		Result.Add(GetGridDataById(TileId.X, TileId.Y)); 
+	}
+
+	return Result; 
+}
+
+TArray<FIntPoint> UGridSystem::GetNeighbourIds(FIntPoint GridId)
+{
+	TArray<FIntPoint> Result;
+	
+	TArray<FIntPoint> HNeighbours; 
+	if(GridId.Y == 0)
+	{
+		HNeighbours.Add(FIntPoint(GridId.X, GridConfig->NumberOfColumns -1));
+		HNeighbours.Add(FIntPoint(GridId.X, GridId.Y + 1));
+	}
+	else if(GridId.Y == GridConfig->NumberOfColumns -1)
+	{
+		HNeighbours.Add(FIntPoint(GridId.X, GridId.Y - 1));
+		HNeighbours.Add(FIntPoint(GridId.X, 0));
+	}
+	else
+	{
+		HNeighbours.Add(FIntPoint(GridId.X, GridId.Y - 1));
+		HNeighbours.Add(FIntPoint(GridId.X, GridId.Y + 1));
+	}
+
+	Result.Append(HNeighbours);
+
+	if(GridId.X < GridConfig->NumberOfRows - 1)
+	{
+		Result.Append(GetVNeighbourIds(GridId, EVNeighbourRelation::Top));
+	}
+
+	if(GridId.X > 0)
+	{
+		Result.Append(GetVNeighbourIds(GridId, EVNeighbourRelation::Bottom));
+	}
+
+	return Result; 
+}
+
+TArray<FIntPoint> UGridSystem::GetVNeighbourIds(FIntPoint GridId, EVNeighbourRelation Relation)
+{
+	const int32 RowDifference = Relation == EVNeighbourRelation::Top ? 1 : - 1;
+	TArray<FIntPoint> Result; 
+
+	if(GridId.X % 2 == 0)
+	{
+		const int32 RightTopNeighbourId = GridId.Y != GridConfig->NumberOfColumns - 1 ?
+			GridId.Y + 1 : 0;
+			
+		Result.Add(FIntPoint(GridId.X + RowDifference, GridId.Y));
+		Result.Add(FIntPoint(GridId.X + RowDifference,RightTopNeighbourId));			
+	}
+	else
+	{
+		const int32 LeftTopNeighbourId = GridId.Y == 0 ? GridConfig->NumberOfColumns - 1 : GridId.Y - 1;  
+			
+		Result.Add(FIntPoint(GridId.X + RowDifference, LeftTopNeighbourId));
+		Result.Add(FIntPoint(GridId.X + RowDifference, GridId.Y ));
+	}
+
+	return Result; 
 }
 
 bool UGridSystem::IsLocationValid(FVector Location) const
