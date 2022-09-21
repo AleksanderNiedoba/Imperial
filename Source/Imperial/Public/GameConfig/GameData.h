@@ -5,16 +5,23 @@
 #include "UObject/NoExportTypes.h"
 #include "UObject/SoftObjectPtr.h"
 #include "GridConfig.h"
+#include "Data/GDResourceDataAsset.h"
 #include "Grid/TileDefinitions.h"
 #include "GameData.generated.h"
 
 
 
-UCLASS(BlueprintType, EditInlineNew)
+UCLASS(BlueprintType, EditInlineNew, DefaultToInstanced)
 class IMPERIAL_API UGameData : public UObject
 {
 	GENERATED_BODY()
+
 public:
+	void LoadGameData();
+	static UGameData* GetGameData(); 
+
+
+	//Configs 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	TSoftObjectPtr<UGridConfig>  GridConfig = nullptr;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
@@ -22,8 +29,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	TSoftObjectPtr<UTileDefinitions>  TileDefinitions = nullptr;
 
-	void LoadGameData();
-	static UGameData* GetGameData(); 
 	
 	UGridConfig* GetGridConfig() const { return CachedGridConfig; } 
 	UCameraConfig* GetCameraConfig() const {return CachedCameraConfig; }
@@ -35,5 +40,13 @@ private:
 	UPROPERTY(Transient, DuplicateTransient)
 	UCameraConfig* CachedCameraConfig = nullptr;
 	UPROPERTY(Transient, DuplicateTransient)
-	UTileDefinitions* CachedTileDefinitions = nullptr; 
+	UTileDefinitions* CachedTileDefinitions = nullptr;
+
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UGDResourceTable* ResourceTable;
+	UPROPERTY(Transient, BlueprintReadOnly)
+	TArray<UGDResourceDataAsset*> ResourceCache;
+	
 };

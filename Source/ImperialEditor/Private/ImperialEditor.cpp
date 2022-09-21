@@ -4,6 +4,7 @@
 #include "IAssetTools.h"
 #include "Modules/ModuleManager.h"
 #include "LevelEditor.h"
+#include "CustomDataTypes/GameDataActions.h"
 #include "CustomDataTypes/GridProfileActions.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "TabTools/GridMapCreator.h"
@@ -33,6 +34,10 @@ void FImperialEditorModule::StartupModule()
 		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 		EAssetTypeCategories::Type ImperialAssetsCategory = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Imperial")), FText::FromString("Imperial"));
 		TSharedPtr<IAssetTypeActions> Action = MakeShareable(new FGridProfileAssetActions(ImperialAssetsCategory));
+		AssetTools.RegisterAssetTypeActions(Action.ToSharedRef());
+		CreatedAssetTypeActions.Add(Action);
+
+		Action = MakeShareable(new FGameDataAssetActions(ImperialAssetsCategory));
 		AssetTools.RegisterAssetTypeActions(Action.ToSharedRef());
 		CreatedAssetTypeActions.Add(Action);
 	}
