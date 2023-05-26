@@ -23,8 +23,15 @@ USTRUCT(BlueprintType)
 struct FGridProfileData
 {
 	GENERATED_BODY()
+	FGridProfileData()
+	{
+		TerrainType = ETileTerrainType::Water;
+		IslandId = 0;  
+	}
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	ETileTerrainType TerrainType; 
+	ETileTerrainType TerrainType;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	uint8 IslandId = 0;
 };
 
 USTRUCT(BlueprintType)

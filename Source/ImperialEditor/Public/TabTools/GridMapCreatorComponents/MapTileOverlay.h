@@ -14,10 +14,12 @@ class MapTileOverlay : public TileOverlay
 	SLATE_BEGIN_ARGS(MapTileOverlay)
 		: _Content()
 		, _ColorAndOpacity()
+	
 		{}
 		SLATE_DEFAULT_SLOT(FArguments, Content)
 		SLATE_ARGUMENT(FLinearColor, ColorAndOpacity)
 		SLATE_ARGUMENT(FIntPoint, TileId)
+		SLATE_ARGUMENT(uint8, IslandId)
 		SLATE_EVENT(FOnTileEvent, OnSelected)
 		SLATE_EVENT(FOnTileEvent, OnHovered)
 	SLATE_END_ARGS()

@@ -13,18 +13,28 @@ class ClickableHyperlinkMap : public SCompoundWidget
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
-	void InitWithProfile(UGridProfile* GridProfile);
+	void InitWithProfile(UGridProfile* InGridProfile);
+	void RefreshButtonsState(); 
 	void Clear();
 	void OnSelected(FIntPoint SelectedId);
 	void OnHovered(FIntPoint SelectedId);
-	void SetTileData(FIntPoint TileId, struct FTileDefinitionData TileDefinition); 
+	void SetTileData(FIntPoint TileId, struct FTileDefinitionData TileDefinition);
+
+	TSharedPtr<SPanel> CreatePanel(bool CreateEmpty); 
 
 protected:
 	TMap<FIntPoint, TSharedRef<class MapTileOverlay>> ButtonsMap;
 
 private:
+	
+	UGridProfile* GridProfile = nullptr; 
 	FTileEvent OnTileSelected;
 	FTileEvent OnTileHovered; 
 	
 };
+
+inline TSharedPtr<SPanel> ClickableHyperlinkMap::CreatePanel(bool CreateEmpty)
+{
+	return SNew(SBox); 
+}
 

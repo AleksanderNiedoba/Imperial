@@ -12,7 +12,7 @@ public:
 	// Create a slate colored border brush with the given linear color and margins
 	FImpSlateColorBorderBrush(const FLinearColor& InColor, const FMargin& InMargin = FMargin(0.0f));
 	// Create a slate colored border brush with the given sRGB color and margins
-	FImpSlateColorBorderBrush(const FColor& InColor, const FMargin& InMargin = FMargin(0.0f));
+	//FImpSlateColorBorderBrush(const FColor& InColor, const FMargin& InMargin = FMargin(0.0f));
 };
 
 

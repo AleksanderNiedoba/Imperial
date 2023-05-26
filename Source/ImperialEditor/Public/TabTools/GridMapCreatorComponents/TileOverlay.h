@@ -20,7 +20,11 @@ class TileOverlay : public SOverlay
 	void Construct(const FArguments& InArgs);
 	void SetColorAndOpacity(FLinearColor Color);
 	void SetSelected(bool NewSelected);
-	bool IsSelected() const { return bIsSelected; } 
+	void SetIslandId(int32 InIslandId);
+	void SetShowIslandId(bool InShowIslandId);
+	void RefreshVisibility();
+	bool IsSelected() const { return bIsSelected; }
+	
 
 	virtual void Navigate();
 	virtual void OnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
@@ -29,11 +33,17 @@ class TileOverlay : public SOverlay
 
 		
 protected:
+	int32 IslandId = -1;
+	bool ShowIslandId = false; 
+	
 	FLinearColor SelectedColor; 
 	TSharedPtr<SCustomBorder> TileColorBorder;
+	TSharedPtr<STextBlock> IslandIdText;
 	bool bIsSelected = false; 
 	
 };
+
+
 
 
 

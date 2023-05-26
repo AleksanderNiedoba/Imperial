@@ -6,6 +6,7 @@
 #include "TabTools/GridMapCreatorComponents/MapTileOverlay.h"
 #include "Grid/TileDefinitions.h"
 #include "Widgets/Layout/SScrollBox.h"
+#include "Widgets/Layout/SSpacer.h"
 
 void ClickableHyperlinkMap::Construct(const FArguments& InArgs)
 {
@@ -14,30 +15,39 @@ void ClickableHyperlinkMap::Construct(const FArguments& InArgs)
 	const auto* GC = UGridConfig::GetGridConfig();
 	TSharedPtr<SVerticalBox> Container = SNew(SVerticalBox);
 	
+	
 	for (int32 RowIndex = 0; RowIndex < GC->NumberOfRows; RowIndex++)
 	{
 		TSharedPtr<SHorizontalBox> RowContainer = SNew(SHorizontalBox);
+		if(RowIndex % 2 != 0 )
+		{
+			RowContainer->AddSlot().AutoWidth()
+			[
+			SNew(SSpacer)
+			.Size(FVector2D(7.f,14.f))
+			];
+		}
 		for (int32 ColumnIndex = 0; ColumnIndex < GC->NumberOfColumns; ColumnIndex++)
 		{
 			TSharedPtr<MapTileOverlay> TileButton = SNew(MapTileOverlay)
 			.IsEnabled(false)
 			.ColorAndOpacity(FLinearColor(FColor(255, 255, 255)))
-			.TileId(FIntPoint(RowIndex, ColumnIndex))
+			.TileId(FIntPoint(ColumnIndex, RowIndex))
 			.OnSelected(this, &ClickableHyperlinkMap::OnSelected)
 			.OnHovered(this, &ClickableHyperlinkMap::OnHovered);
-			RowContainer->AddSlot()
+			RowContainer->AddSlot().AutoWidth()
 			[
 				SNew(SBox)
-				.WidthOverride(15.f)
-				.HeightOverride(15.f)
+				.WidthOverride(14.f)
+				.HeightOverride(14.f)
 				[
 					TileButton.ToSharedRef()
 				]
 			];
 
-			ButtonsMap.Add(FIntPoint(RowIndex, ColumnIndex), TileButton.ToSharedRef()); 
+			ButtonsMap.Add(FIntPoint(ColumnIndex, RowIndex), TileButton.ToSharedRef()); 
 		}
-		Container->AddSlot()[
+		Container->AddSlot().AutoHeight()[
 		RowContainer.ToSharedRef()]; 
 	}
 
@@ -61,23 +71,32 @@ void ClickableHyperlinkMap::Construct(const FArguments& InArgs)
 ];
 }
 
-void ClickableHyperlinkMap::InitWithProfile(UGridProfile* GridProfile)
+void ClickableHyperlinkMap::InitWithProfile(UGridProfile* InGridProfile)
 {
-	if(!IsValid(GridProfile))
+	if(!IsValid(InGridProfile))
 	{
 		Clear(); 
 		return;
 	}
-	
+
+	GridProfile = InGridProfile;
+	RefreshButtonsState();
+}
+
+void ClickableHyperlinkMap::RefreshButtonsState()
+{
 	auto* TileDefinitions = UGameData::GetGameData()->GetTileDefinitions(); 
 	for (const auto KV : GridProfile->GridMapProfile)
 	{
-		if (auto TileButton = ButtonsMap.Find(KV.Key))
+		if (const auto TileButton = ButtonsMap.Find(KV.Key))
 		{
 			FTileDefinitionData TileDefinition; 
 			if(TileDefinitions->GetTileDefinitionForType(KV.Value.TerrainType, TileDefinition))
 			{
+				const bool ShowIslandId = KV.Value.TerrainType != ETileTerrainType::Water;
 				TileButton->Get().SetColorAndOpacity(FLinearColor(TileDefinition.TileMinimapColor));
+				TileButton->Get().SetIslandId(KV.Value.IslandId); 
+				TileButton->Get().SetShowIslandId(ShowIslandId); 
 				TileButton->Get().SetEnabled(true); 
 			}
 		}

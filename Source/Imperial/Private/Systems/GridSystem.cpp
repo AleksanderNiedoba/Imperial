@@ -6,6 +6,7 @@
 #include "GameConfig/GridConfig.h"
 #include "Grid/GridTileData.h"
 
+
 UGridSystem* UGridSystem::GetGridSystem(const UObject* InWorldContextObject)
 {
 	if (!InWorldContextObject || !InWorldContextObject->GetWorld())
@@ -23,8 +24,19 @@ UGridSystem* UGridSystem::GetGridSystem(const UObject* InWorldContextObject)
 UGridSystem* UGridSystem::CreateNew()
 {
 	auto* Instance = NewObject<UGridSystem>();
-	Instance->GridConfig = UGridConfig::GetGridConfig(); 
+	Instance->GridConfig = UGridConfig::GetGridConfig();
 	return Instance; 
+}
+
+UGridMapGenerator* UGridSystem::GetGridMapGenerator()
+{
+	if(!IsValid(MapGenerator))
+	{
+		MapGenerator = NewObject<UGridMapGenerator>();
+		MapGenerator->SetGridSystem(this); 
+	}
+	
+	return MapGenerator; 
 }
 
 bool UGridSystem::CreateGrid()
@@ -119,14 +131,15 @@ TArray<UGridTileData*> UGridSystem::GetNeighbours(const UGridTileData* GridTileD
 TArray<FIntPoint> UGridSystem::GetNeighbourIds(FIntPoint GridId)
 {
 	TArray<FIntPoint> Result;
+	const UGridConfig* GC = UGridConfig::GetGridConfig(); 
 	
 	TArray<FIntPoint> HNeighbours; 
 	if(GridId.Y == 0)
 	{
-		HNeighbours.Add(FIntPoint(GridId.X, GridConfig->NumberOfColumns -1));
+		HNeighbours.Add(FIntPoint(GridId.X, GC->NumberOfRows -1));
 		HNeighbours.Add(FIntPoint(GridId.X, GridId.Y + 1));
 	}
-	else if(GridId.Y == GridConfig->NumberOfColumns -1)
+	else if(GridId.Y == GC->NumberOfRows -1)
 	{
 		HNeighbours.Add(FIntPoint(GridId.X, GridId.Y - 1));
 		HNeighbours.Add(FIntPoint(GridId.X, 0));
@@ -139,7 +152,7 @@ TArray<FIntPoint> UGridSystem::GetNeighbourIds(FIntPoint GridId)
 
 	Result.Append(HNeighbours);
 
-	if(GridId.X < GridConfig->NumberOfRows - 1)
+	if(GridId.X < GC->NumberOfColumns - 1)
 	{
 		Result.Append(GetVNeighbourIds(GridId, EVNeighbourRelation::Top));
 	}
@@ -154,12 +167,13 @@ TArray<FIntPoint> UGridSystem::GetNeighbourIds(FIntPoint GridId)
 
 TArray<FIntPoint> UGridSystem::GetVNeighbourIds(FIntPoint GridId, EVNeighbourRelation Relation)
 {
+	const UGridConfig* GC = UGridConfig::GetGridConfig(); 
 	const int32 RowDifference = Relation == EVNeighbourRelation::Top ? 1 : - 1;
 	TArray<FIntPoint> Result; 
 
 	if(GridId.X % 2 == 0)
 	{
-		const int32 RightTopNeighbourId = GridId.Y != GridConfig->NumberOfColumns - 1 ?
+		const int32 RightTopNeighbourId = GridId.Y != GC->NumberOfRows - 1 ?
 			GridId.Y + 1 : 0;
 			
 		Result.Add(FIntPoint(GridId.X + RowDifference, GridId.Y));
@@ -167,7 +181,7 @@ TArray<FIntPoint> UGridSystem::GetVNeighbourIds(FIntPoint GridId, EVNeighbourRel
 	}
 	else
 	{
-		const int32 LeftTopNeighbourId = GridId.Y == 0 ? GridConfig->NumberOfColumns - 1 : GridId.Y - 1;  
+		const int32 LeftTopNeighbourId = GridId.Y == 0 ? GC->NumberOfRows - 1 : GridId.Y - 1;  
 			
 		Result.Add(FIntPoint(GridId.X + RowDifference, LeftTopNeighbourId));
 		Result.Add(FIntPoint(GridId.X + RowDifference, GridId.Y ));

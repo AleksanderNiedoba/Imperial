@@ -6,13 +6,13 @@
 
 void UInteractionHandler::UpdateInteractions(FHitResult HitData)
 {
-	if (HitData.Actor == nullptr)
+	if (HitData.GetActor() == nullptr)
 	{
 		CheckForRelease();
 		return; 
 	}
 
-	if (UInteractComponent* NewHoveredComponent = HitData.Actor->FindComponentByClass<UInteractComponent>())
+	if (UInteractComponent* NewHoveredComponent = HitData.GetActor()->FindComponentByClass<UInteractComponent>())
 	{
 		if (NewHoveredComponent != HoveredComponent)
 		{

@@ -1,5 +1,6 @@
 #pragma once
 #include "ContentBrowserDelegates.h"
+#include "Widgets/Input/SSpinBox.h"
 #include "Grid/GridProfile.h"
 
 
@@ -22,6 +23,8 @@ class GridMapCreatorPanel : public SCompoundWidget
 
 	void OnAssetLoaded(UGridProfile* InGridProfile);
 	void OnTileSelected(FIntPoint TileId);
+	void SetSeedTextValue(int32 InSeed); 
+	FReply OnRandomMapButtonClicked(); 
 
 	void OnTerrainTypeSelected(ETileTerrainType NewTerrainData, FTileDefinitionData NewTileDefinition); 
 
@@ -30,6 +33,8 @@ protected:
 	
 	TSharedPtr<class TileProfileRowDetails> ProfileRowDetails;
 	TSharedPtr<class ClickableHyperlinkMap> ClickableMap;
+	TSharedPtr<STextBlock> SeedTextBox; 
+	TSharedPtr<SSpinBox<int32>> SeedSpinBox; 
 	TWeakPtr<GridMapCreator> GridMapCreator;
 	class UGridConfig* GridConfig = nullptr;
 	UGridProfile* GridProfile = nullptr;
@@ -40,6 +45,9 @@ private:
 	ETileTerrainType CurrentTileData = ETileTerrainType::Water;
 	EGridMapCreatorTool CurrentTool = EGridMapCreatorTool::None; 
 };
+
+
+
 
 
 

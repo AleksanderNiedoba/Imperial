@@ -40,7 +40,7 @@ bool UGameDataFactory::ConfigureProperties()
 	Options.NameTypeToDisplay = EClassViewerNameTypeToDisplay::Dynamic;
 	const TSharedPtr<FChildrenOfClassFilterViewer> Filter = MakeShareable(new FChildrenOfClassFilterViewer);
 	Filter->AllowedChildrenOfClasses.Add(ParentClass);
-	Options.ClassFilter = Filter;
+	Options.ClassFilters.Add(Filter.ToSharedRef());
 	
 	const bool bPressedOk = SClassPickerDialog::PickClass(TitleText, Options, SelectedClass, ParentClass);
 

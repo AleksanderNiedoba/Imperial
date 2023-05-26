@@ -65,17 +65,43 @@ void TileOverlay::Construct(const FArguments& InArgs)
 				}
 				return FReply::Unhandled();
 				})
-		]);
+		]
+		+SOverlay::Slot()
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Center)
+		[
+			SAssignNew(IslandIdText, STextBlock)
+			.Visibility(ShowIslandId ? EVisibility::HitTestInvisible : EVisibility::Collapsed)
+			.Text(FText::FromString(FString("")))
+			.ColorAndOpacity(FColor::Black)
+			]);
 }
 
 void TileOverlay::Navigate()
 {
 }
 
+void TileOverlay::SetShowIslandId(bool InShowIslandId)
+{
+	ShowIslandId = InShowIslandId;
+	RefreshVisibility(); 
+}
+
+void TileOverlay::RefreshVisibility()
+{
+	IslandIdText->SetVisibility( IslandId != 0 ? EVisibility::HitTestInvisible : EVisibility::Collapsed);
+}
+
+void TileOverlay::SetIslandId(int32 InIslandId)
+{
+	IslandId = InIslandId;
+	IslandIdText->SetText(FText::FromString(FString::FromInt(IslandId)));
+	RefreshVisibility(); 
+}
+
 void TileOverlay::SetColorAndOpacity(FLinearColor Color)
 {
 	TileColorBorder->SetTileColor(Color);
-	
 }
 
 void TileOverlay::SetSelected(bool NewSelected)

@@ -14,9 +14,12 @@ class IMPERIAL_API UGridProfile : public UObject
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere)
+	int32 GridGenerationSeed = - 1; 
 	UPROPERTY(EditAnywhere)
 	TMap<FIntPoint, FGridProfileData> GridMapProfile;
 
+	void Reset(); 
 	void OnProfileCreated(); 
 };
 

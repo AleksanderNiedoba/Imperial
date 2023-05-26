@@ -3,8 +3,10 @@
 #include "TabTools/GridMapCreatorComponents/TileProfileRowDetails.h"
 #include "TabTools/GridMapCreatorComponents/ClickableHyperlinkMap.h"
 #include "TabTools/GridMapCreatorComponents/TerrainSelector.h"
+#include "Widgets/Input/SButton.h"
 #include "Grid/GridProfile.h"
 #include "Grid/GridData.h"
+#include "Systems/GridSystem.h"
 #include "TabTools/GridMapCreator.h"
 #include "Widgets/Layout/SScrollBox.h"
 
@@ -16,6 +18,8 @@ void GridMapCreatorPanel::Construct(const FArguments& InArgs)
 	{
 		return; 
 	}
+	
+	SAssignNew(ProfileRowDetails, TileProfileRowDetails);
 	
 	ChildSlot
 	[
@@ -54,7 +58,7 @@ void GridMapCreatorPanel::Construct(const FArguments& InArgs)
 						+SVerticalBox::Slot().AutoHeight()
 						.Padding(10.f, 10.f)
 						[
-							SAssignNew(ProfileRowDetails, TileProfileRowDetails)
+							ProfileRowDetails.ToSharedRef()
 						]
 						+SVerticalBox::Slot().AutoHeight()
 						.Padding(10.f, 10.f)
@@ -62,18 +66,52 @@ void GridMapCreatorPanel::Construct(const FArguments& InArgs)
 							SNew(TerrainSelector)
 							.OnSelected(this, &GridMapCreatorPanel::OnTerrainTypeSelected)
 						]
+						+SVerticalBox::Slot()
+						.AutoHeight()
+						.Padding(10.f, 10.f)
+						[
+							SNew(SHorizontalBox)
+							+SHorizontalBox::Slot()
+							.FillWidth(.2f)
+							[
+								SAssignNew(SeedSpinBox, SSpinBox<int32>)
+								.MinValue(-1)
+								.MaxValue(20000)
+								.Value(- 1)
+							]
+							+SHorizontalBox::Slot()
+							.Padding(10.f, 0.f, 0.f, 0.f)
+							.FillWidth(1.0f)
+							[
+								SAssignNew(SeedTextBox, STextBlock)
+							]
+						]
+						+SVerticalBox::Slot().AutoHeight()
+						.Padding(10.f, 10.f)
+						[
+							SNew(SButton)
+							.Text(FText::FromString("GenerateRandom"))
+							.OnClicked(this, &GridMapCreatorPanel::OnRandomMapButtonClicked)
+						]
 					]
 				]
 			]
 		]
 	];
+
+	SetSeedTextValue(-1); 
 }
 
 void GridMapCreatorPanel::OnAssetLoaded(UGridProfile* InGridProfile)
 {
 	GridProfile = InGridProfile;
 	ClickableMap->InitWithProfile(InGridProfile);
-	ProfileRowDetails->OnAssetLoaded(InGridProfile); 
+	ProfileRowDetails->OnAssetLoaded(InGridProfile);
+
+	if(IsValid(InGridProfile))
+	{
+		SetSeedTextValue(InGridProfile->GridGenerationSeed); 
+	}
 }
 
 void GridMapCreatorPanel::OnTileSelected(FIntPoint TileId)
@@ -103,4 +141,24 @@ void GridMapCreatorPanel::OnTerrainTypeSelected(ETileTerrainType NewTerrainData,
 	CurrentTool = Terrain;
 	CurrentTileData = NewTerrainData;
 	TileDefinitionData = NewTileDefinition; 
+}
+
+FReply GridMapCreatorPanel::OnRandomMapButtonClicked()
+{
+	if(!IsValid(GridProfile))
+	{
+		return FReply::Handled(); 
+	}
+	
+	UGridSystem* GS = UGridSystem::CreateNew();
+	const int32 GeneratedMapSeed = GS->GetGridMapGenerator()->GenerateMap(GridProfile, SeedSpinBox->GetValue());
+	SetSeedTextValue(GeneratedMapSeed); 
+	ClickableMap->RefreshButtonsState(); 
+	return FReply::Handled(); 
+}
+
+void GridMapCreatorPanel::SetSeedTextValue(int32 InSeed)
+{
+	const FString SeedString = "Generation seed: " + FString::FromInt(InSeed); 
+	SeedTextBox->SetText(FText::FromString(SeedString)); 
 }

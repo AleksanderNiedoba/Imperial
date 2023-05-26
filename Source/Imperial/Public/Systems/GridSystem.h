@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Grid/GridMapGenerator.h"
 #include "UObject/NoExportTypes.h"
 #include "GridSystem.generated.h"
 
@@ -40,6 +41,7 @@ public:
 	UFUNCTION(BlueprintPure, meta = (WorldContext = "InWorldContextObject"))
 	static UGridSystem* GetGridSystem(const UObject* InWorldContextObject);
 	static UGridSystem* CreateNew();
+	UGridMapGenerator* GetGridMapGenerator(); 
 
 	bool CreateGrid();
 	FVector CalculateTileCenterPoint(int32 RowId, int32 ColumnId) const; 
@@ -47,8 +49,8 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TArray<UGridTileData*> GetNeighbours(const UGridTileData* GridTileData); 
-	TArray<FIntPoint> GetNeighbourIds(FIntPoint GridId);
-	TArray<FIntPoint> GetVNeighbourIds(FIntPoint GridId, EVNeighbourRelation Relation); 
+	static TArray<FIntPoint> GetNeighbourIds(FIntPoint GridId);
+	static TArray<FIntPoint> GetVNeighbourIds(FIntPoint GridId, EVNeighbourRelation Relation); 
 	
 	UFUNCTION(BlueprintPure)
 	bool IsLocationValid(FVector Location)const ; 
@@ -63,6 +65,8 @@ public:
 	FNewGridTileHit OnNewGridTileHit;
 
 private:
+	UPROPERTY()
+	UGridMapGenerator* MapGenerator = nullptr; 
 	UPROPERTY()
 	TArray<FGridRowData> Grid; 
 	UPROPERTY()
